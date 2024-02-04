@@ -44,21 +44,54 @@ app.post("/api/users",(req,res)=>{
      res.send(`user succesfully created with id ${nextId}`);
 });
 
-// to update existing data in list
+/* to update existing user data in  in list like you want to update partial data like a specsfic field or fields 
+     here we are using patch 
+*/
 
+app.patch("/api/users/:id",(req,res) =>{
 
-app.patch("/app/users/:id",(req,res) =>{
+    const reqId = req.params.id;
+    const reqValue = req.body;
+    const findUser = users.find((user)=> user.id == reqId);
 
-    const id = req.params.id;
-    const updatedValue = req.body;
-    const findUser = users.find((user)=> user.id == id);
     if(findUser)
-    {
-        users.at(findUser.id).first_name = updatedValue.first_name;
-        fs.writeFile("./MOCK_DATA.json",  JSON.stringify (users) ,(err,data)=>{if(err)console.log("something happenin time of create new user")})
+    {   
+         if(reqValue.first_name!= undefined)
+            findUser.first_name = reqValue.first_name;
+         if(reqValue.last_name!= undefined)
+            findUser.last_name = reqValue.last_name;
+         if(reqValue.email!= undefined)
+            findUser.email = reqValue.email;
+         if(reqValue.gender!= undefined)
+            findUser.gender = reqValue.gender;
+        if(reqValue.address!= undefined)
+            findUser.address = reqValue.address; 
+        
+           fs.readFile("./MOCK_DATA.json", 'utf8', (err, data) => {
+            if (err) {
+              console.error('Error reading JSON file:', err);
+              return res.status(500).json({ error: 'Internal Server Error' });
+            }
+        
+                const jsonData = JSON.parse(data); 
+                Object.assign(jsonData,findUser); 
 
-        res.send("user succesfully updated with ", users.at(findUser.id));
-    }
+                // Write back to the JSON file
+                fs.writeFile("./MOCK_DATA.json", JSON.stringify(jsonData, null, 2), 'utf8', (err) => {
+                if (err) {
+                console.error('Error writing to JSON file:', err);
+                return res.status(500).json({ error: 'Internal Server Error' });
+                }
+        
+                return res.status(201).json({ Success: 'User detail has been update' });
+               });        
+
+           });
+
+     } 
+     else
+     return res.status(404).json({ error: 'user not found to update' });
+
 });
 
 app.listen(PORT,() =>{console.log(`Server is starting on port: ${PORT}`)});
