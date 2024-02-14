@@ -11,6 +11,24 @@ const PORT = 8000;
 
 app.use(express.urlencoded({extended:false}));
 
+app.use((req,res,next)=>
+{  
+   console.log("I am from midale ware 1");
+   next();
+});
+
+app.use((req,res,next)=>
+{  
+   console.log("I am from midale ware 2");
+   next();
+});
+
+app.use((req,res,next)=>
+{  
+     fs.appendFileSync("log.txt",`\n ${Date.now()}::${req.method}::${req.path}`)
+     next();
+});
+
 // get the all users records for bowser spescfic
 app.get("/users",(req,res) =>{
      const html = `
