@@ -55,8 +55,16 @@ async function handleAnalyticalData(req,res)
       totalClicks : result.visitedHistory.length,
       analytics: result.visitedHistory,
    });
-
-
 }
 
-module.exports = {handleGenerateNewShortUrl,handleRedirectToOrignalUrl,handleAnalyticalData,};
+
+async function handleGetallshortids(req,res)
+{
+   const result =  await URL.find({});
+   if(result.length === 0)
+      return res.render({error:"no data found please add some data "});
+   else
+     return res.render('home',{allurls:result,});
+}
+
+module.exports = {handleGenerateNewShortUrl,handleRedirectToOrignalUrl,handleAnalyticalData,handleGetallshortids,};
